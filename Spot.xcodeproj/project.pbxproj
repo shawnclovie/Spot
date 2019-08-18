@@ -61,6 +61,7 @@
 		9B3D9D392308514D0091BA83 /* ZipLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D9D382308514D0091BA83 /* ZipLevel.swift */; };
 		9B3D9D3B230851840091BA83 /* ZipError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D9D3A230851840091BA83 /* ZipError.swift */; };
 		9B3D9D3D230852430091BA83 /* Zip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D9D3C230852430091BA83 /* Zip.swift */; };
+		9B3D9E0C23092BB20091BA83 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D9E0B23092BB20091BA83 /* Status.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +134,7 @@
 		9B3D9D382308514D0091BA83 /* ZipLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipLevel.swift; sourceTree = "<group>"; };
 		9B3D9D3A230851840091BA83 /* ZipError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipError.swift; sourceTree = "<group>"; };
 		9B3D9D3C230852430091BA83 /* Zip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zip.swift; sourceTree = "<group>"; };
+		9B3D9E0B23092BB20091BA83 /* Status.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,6 +296,7 @@
 				9B3D9CF823084F2C0091BA83 /* MD5Digest.swift */,
 				9B3D9CEF23084F2B0091BA83 /* NotificationObserver.swift */,
 				9B3D9CF423084F2B0091BA83 /* Ref.swift */,
+				9B3D9E0B23092BB20091BA83 /* Status.swift */,
 				9B3D9CFC23084F2C0091BA83 /* Suffix.swift */,
 				9B3D9CEE23084F2B0091BA83 /* SynchronizableValue.swift */,
 				9B3D9CF523084F2B0091BA83 /* UserDefaultsItem.swift */,
@@ -459,6 +462,7 @@
 				9B3D9D1123084F2C0091BA83 /* Data+.swift in Sources */,
 				9B3D9D1623084F2C0091BA83 /* Error+.swift in Sources */,
 				9B3D9D1923084F2C0091BA83 /* CGContext+.swift in Sources */,
+				9B3D9E0C23092BB20091BA83 /* Status.swift in Sources */,
 				9B3D9D1E23084F2C0091BA83 /* NetworkObserver.swift in Sources */,
 				9B3D9D1423084F2C0091BA83 /* CGImage+.swift in Sources */,
 				9B3D9D2E23084F2C0091BA83 /* WeakRef.swift in Sources */,
