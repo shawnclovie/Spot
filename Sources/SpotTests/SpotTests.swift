@@ -6,7 +6,11 @@
 //  Copyright © 2019 Spotlit.club. All rights reserved.
 //
 
+#if canImport(MobileCoreServices)
 import MobileCoreServices
+#else
+import CoreServices
+#endif
 import XCTest
 @testable import Spot
 
@@ -44,23 +48,33 @@ class SpotTests: XCTestCase {
 	}
 	
 	func testDecimalColor() {
+		#if canImport(UIKit)
 		XCTAssert(DecimalColor.clear == .init(with: .clear))
 		XCTAssert(DecimalColor.black == .init(with: .black))
 		XCTAssert(DecimalColor.white == .init(with: .white))
+		XCTAssert(DecimalColor(cgColor: UIColor.red.cgColor).red == UInt8.max)
+		#endif
 		XCTAssert(DecimalColor(rgb: 0xff0000) == .init(with: .red))
 		XCTAssert(DecimalColor(hexARGB: "#ffff0000")! == .init(with: .red))
 		XCTAssert(DecimalColor(rgb: 0xff0000) == .init(with: .init(red: 1, green: 0, blue: 0, alpha: 1)))
-		let values: [DecimalColor] = [
+		XCTAssert(DecimalColor(floatRed: 2, green: 0, blue: 0, alpha: 1).red == .max)
+		var values: [DecimalColor] = [
 			.clear,
 			.init(rgb: 0xfd020f, alpha: 60),
 			DecimalColor(hexARGB: "#ff0000")!,
 			DecimalColor(hexARGB: "#f2002401")!,
-			DecimalColor(with: .purple).withAlphaComponent(120),
-			.init(with: .yellow),
 			DecimalColor(hue: 0.2, saturation: 0.02, brightness: 0.76, alpha: 0.9),
-		]
+			]
+		#if canImport(UIKit)
+		values.append(DecimalColor(with: .purple).withAlphaComponent(120))
+		values.append(.init(with: .yellow))
+		#endif
 		values.forEach{
-			print($0.hexString, $0, $0.colorValue, separator: "\n")
+			print($0.hexString, $0, terminator: "")
+			#if canImport(UIKit)
+			print($0.colorValue, terminator: "")
+			#endif
+			print()
 		}
 	}
 	
@@ -159,9 +173,9 @@ class SpotTests: XCTestCase {
 	
 	func testDrawAndEncode() {
 		let image: CGImage? = CGContext.spot(width: 100, height: 100) { ctx in
-			ctx.setFillColor(UIColor.yellow.cgColor)
+			ctx.setFillColor(DecimalColor(rgb: 0xFF0000).cgColor)
 			ctx.fill(CGRect(x: 20, y: 20, width: 35, height: 60))
-			ctx.setStrokeColor(UIColor.black.cgColor)
+			ctx.setStrokeColor(DecimalColor(gray: 0).cgColor)
 			ctx.move(to: CGPoint(x: 10, y: 10))
 			ctx.addLine(to: CGPoint(x: 50, y: 50))
 			return ctx.makeImage()
@@ -215,9 +229,9 @@ class SpotTests: XCTestCase {
 		}
 	}
 	
-	func makeCGImage(size: CGSize, color: UIColor, closure: ((CGContext)->Void)? = nil) -> CGImage? {
+	func makeCGImage(size: CGSize, color: CGColor, closure: ((CGContext)->Void)? = nil) -> CGImage? {
 		CGContext.spot(width: Int(size.width), height: Int(size.height), invoking: { ctx -> CGImage? in
-			ctx.setFillColor(color.cgColor)
+			ctx.setFillColor(color)
 			ctx.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height * 0.75))
 			closure?(ctx)
 			return ctx.makeImage()
@@ -226,7 +240,7 @@ class SpotTests: XCTestCase {
 	
 	func testImageSource() {
 		let size = CGSize(width: 45, height: 25)
-		let image = makeCGImage(size: size, color: .green)
+		let image = makeCGImage(size: size, color: DecimalColor(rgb: 0x00FF00).cgColor)
 		guard let data = image?.spot.encode(as: .png, orientation: nil) else {
 			XCTFail()
 			return
@@ -251,8 +265,8 @@ class SpotTests: XCTestCase {
 	
 	func testResizeCGImage() {
 		let size = CGSize(width: 34, height: 232)
-		let image = makeCGImage(size: size, color: .blue) {
-			$0.setFillColor(UIColor.red.cgColor)
+		let image = makeCGImage(size: size, color: DecimalColor(rgb: 0x0000FF).cgColor) {
+			$0.setFillColor(DecimalColor(rgb: 0xFF0000).cgColor)
 			$0.fill(CGRect(x: 5, y: 5, width: 10, height: 20))
 		}
 		let pathSRC = URL.spot_cachesPath.appendingPathComponent("resize_src.png")
@@ -267,18 +281,18 @@ class SpotTests: XCTestCase {
 	}
 	
 	func testKVO() {
-		let obj = UILabel()
+		let obj = NSMutableParagraphStyle()
 		do {
-			obj.text = "abc"
-			let observer = KeyValueObserver(object: obj, keyPath: \.text) { (obj, change) in
+			obj.lineSpacing = 1
+			let observer = KeyValueObserver(object: obj, keyPath: \.lineSpacing) { (obj, change) in
 				print("value changed:", obj, change)
 			}
 			print(observer)
-			obj.text = "def"
+			obj.lineSpacing = 2
 			observer.invalidate()
-			obj.text = "ghi"
+			obj.lineSpacing = 3
 		}
-		obj.text = "zzz"
+		obj.lineSpacing = 4
 		print("done")
 	}
 	

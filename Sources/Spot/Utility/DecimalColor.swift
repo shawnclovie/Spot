@@ -46,6 +46,15 @@ public struct DecimalColor {
 		self.alpha = alpha
 	}
 	
+	/// Init with RGBA, each parameter should between 0...1
+	public init(floatRed red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+		let maxValue = CGFloat(UInt8.max)
+		self.red = UInt8(maxValue * min(1, max(0, red)))
+		self.green = UInt8(maxValue * min(1, max(0, green)))
+		self.blue = UInt8(maxValue * min(1, max(0, blue)))
+		self.alpha = UInt8(maxValue * min(1, max(0, alpha)))
+	}
+	
 	/// Create color from number mixed RGB and alpha
 	///
 	/// - Parameters:
@@ -56,6 +65,10 @@ public struct DecimalColor {
 				  green: UInt8((rgb & 0xFF00) >> 8),
 				  blue: UInt8(rgb & 0xFF),
 				  alpha: alpha)
+	}
+	
+	public init(gray: UInt8, alpha: UInt8 = .max) {
+		self.init(red: gray, green: gray, blue: gray, alpha: alpha)
 	}
 	
 	/// Create color with HSB/HSV and alpha
@@ -84,6 +97,11 @@ public struct DecimalColor {
 		self.init(rgb: color, alpha: len >= 9 ? UInt8((color & 0xFF000000) >> 24) : .max)
 	}
 	
+	public var floatRed: CGFloat {CGFloat(red) / CGFloat(UInt8.max)}
+	public var floatGreen: CGFloat {CGFloat(green) / CGFloat(UInt8.max)}
+	public var floatBlue: CGFloat {CGFloat(blue) / CGFloat(UInt8.max)}
+	public var floatAlpha: CGFloat {CGFloat(alpha) / CGFloat(UInt8.max)}
+
 	public var hexString: String {
 		let rgb = String(format: "%02lX%02lX%02lX", red, green, blue)
 		return "#" + (alpha == .max ? rgb : String(format: "%02lX%@", alpha, rgb))
@@ -96,21 +114,46 @@ public struct DecimalColor {
 	}
 }
 
+extension DecimalColor {
+	
+	public init(cgColor: CGColor) {
+		if let comps = cgColor.components, comps.count >= 4 {
+			let max = CGFloat(UInt8.max)
+			self.init(red: UInt8(comps[0] * max), green: UInt8(comps[1] * max),
+					  blue: UInt8(comps[2] * max), alpha: UInt8(comps[3] * max))
+		} else {
+			#if canImport(UIKit)
+			let color = UIColor(cgColor: cgColor)
+			#elseif canImport(AppKit)
+			let color = NSColor(cgColor: cgColor) ?? .init()
+			#endif
+			self = .init(with: color)
+		}
+	}
+	
+	public var cgColor: CGColor {
+		if let cg = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [floatRed, floatGreen, floatBlue, floatAlpha]) {
+			return cg
+		}
+		return colorValue.cgColor
+	}
+}
+
 extension DecimalColor: Equatable {
 	public static func ==(l: DecimalColor, r: DecimalColor) -> Bool {
 		l.red == r.red && l.green == r.green && l.blue == r.blue && l.alpha == r.alpha
 	}
 	
 	public static var clear: DecimalColor {
-		.init(rgb: 0x000000, alpha: .min)
+		.init(gray: .min, alpha: .min)
 	}
 	
 	public static var black: DecimalColor {
-		.init(rgb: 0x000000, alpha: .max)
+		.init(gray: .min, alpha: .max)
 	}
 	
 	public static var white: DecimalColor {
-		.init(rgb: 0xffffff, alpha: .max)
+		.init(gray: .max, alpha: .max)
 	}
 }
 
@@ -125,15 +168,30 @@ extension DecimalColor {
 		var b: CGFloat = 0
 		var a: CGFloat = 0
 		color.getRed(&r, green: &g, blue: &b, alpha: &a)
-		let max = CGFloat(UInt8.max)
-		self.init(red: UInt8(r * max), green: UInt8(g * max),
-				  blue: UInt8(b * max), alpha: UInt8(a * max))
+		self.init(floatRed: r, green: g, blue: b, alpha: a)
 	}
 	
 	public var colorValue: UIColor {
-		let max = CGFloat(UInt8.max)
-		return UIColor(red: CGFloat(red) / max, green: CGFloat(green) / max,
-					 blue: CGFloat(blue) / max, alpha: CGFloat(alpha) / max)
+		.init(red: floatRed, green: floatGreen, blue: floatBlue, alpha: floatAlpha)
+	}
+}
+#endif
+
+#if canImport(AppKit)
+import AppKit
+
+extension DecimalColor {
+	public init(with color: NSColor) {
+		var r: CGFloat = 0
+		var g: CGFloat = 0
+		var b: CGFloat = 0
+		var a: CGFloat = 0
+		color.getRed(&r, green: &g, blue: &b, alpha: &a)
+		self.init(floatRed: r, green: g, blue: b, alpha: a)
+	}
+	
+	public var colorValue: NSColor {
+		.init(red: floatRed, green: floatGreen, blue: floatBlue, alpha: floatAlpha)
 	}
 }
 #endif
