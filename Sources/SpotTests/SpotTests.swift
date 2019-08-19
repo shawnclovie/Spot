@@ -83,6 +83,10 @@ class SpotTests: XCTestCase {
 		XCTAssertEqual(" true".spot.boolValue, false)
 	}
 	
+	func testDataExtensions() {
+		XCTAssertEqual("ab".data(using: .utf8)!.spot.hexString, "6162")
+	}
+	
 	// MARK: -
 	
 	func testDecimalColor() {
