@@ -9,7 +9,13 @@
 import Foundation
 
 extension Dictionary {
-	public func spot_value(keys: Key...) -> Any? {
+	@inlinable
+	public func spot_value(_ keys: Key...) -> Any? {
+		spot_value(keys: ArraySlice(keys))
+	}
+	
+	@inlinable
+	public func spot_value(keys: [Key]) -> Any? {
 		spot_value(keys: ArraySlice(keys))
 	}
 	

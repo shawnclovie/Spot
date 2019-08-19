@@ -47,6 +47,17 @@ class SpotTests: XCTestCase {
 		print(Localization.shared.localizedString(key: "ok"))
 	}
 	
+	func testCollectionExtension() {
+		let dict: [AnyHashable: Any] = [
+			"a": ["aa": 10, "bb": 11],
+			"b": [1, 2, 3],
+			"c": 100,
+		]
+		XCTAssert(dict.spot_value(keys: ["a", "aa"]) == 10)
+		XCTAssertNotNil(dict.spot_value(keys: ["b"]))
+		XCTAssert(dict.spot_value("c") == 100)
+	}
+	
 	func testDecimalColor() {
 		#if canImport(UIKit)
 		XCTAssert(DecimalColor.clear == .init(with: .clear))
