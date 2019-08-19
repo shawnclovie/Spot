@@ -8,7 +8,7 @@
 
 import Foundation
 
-private let htmlSpecialCharacters: [String: String] = [
+private let htmlSpecialCharacters: [Character: String] = [
 	"<": "&lt;", ">": "&gt;",
 	"&": "&amp;", "'": "&apos;", "\"": "&quot;"
 ]
@@ -119,9 +119,14 @@ extension Suffix where Base == String {
 	}
 	
 	public var encodedHTMLSpecialCharacters: String {
-		var encoded = base
-		for it in htmlSpecialCharacters {
-			encoded = encoded.replacingOccurrences(of: it.key, with: it.value)
+		var encoded = ""
+		encoded.reserveCapacity(base.count)
+		for it in base {
+			if let replacement = htmlSpecialCharacters[it] {
+				encoded += replacement
+			} else {
+				encoded.append(it)
+			}
 		}
 		return encoded
 	}
@@ -149,5 +154,9 @@ extension Suffix where Base == String {
 	
 	public var parsedQueryString: [Substring: Substring] {
 		Substring(base).spot.parsedQueryString
+	}
+	
+	public var boolValue: Bool {
+		Substring(base).spot.boolValue
 	}
 }

@@ -47,16 +47,43 @@ class SpotTests: XCTestCase {
 		print(Localization.shared.localizedString(key: "ok"))
 	}
 	
+	// MARK: - Extensions
+	
 	func testCollectionExtension() {
 		let dict: [AnyHashable: Any] = [
 			"a": ["aa": 10, "bb": 11],
 			"b": [1, 2, 3],
 			"c": 100,
 		]
-		XCTAssert(dict.spot_value(keys: ["a", "aa"]) == 10)
+		XCTAssert(dict.spot_value(keys: ["a", "aa"]) as? Int == 10)
 		XCTAssertNotNil(dict.spot_value(keys: ["b"]))
-		XCTAssert(dict.spot_value("c") == 100)
+		XCTAssert(dict.spot_value("c") as? Int == 100)
+		
+		let array: [Int] = [1, 2, 3]
+		XCTAssertNil(array.spot_value(at: 10))
 	}
+	
+	func testStringExtensions() {
+		XCTAssertEqual("1".spot.md5, "c4ca4238a0b923820dcc509a6f75849b")
+		XCTAssertEqual("a".spot.md5HashCode, 2933798017325973772)
+		XCTAssertEqual(String.spot(queryString: [("a", 1), ("b", 2)]), "a=1&b=2")
+		XCTAssertEqual("1.txt".spot.pathExtension, "txt")
+		XCTAssertEqual("foo/bar".spot.lastPathComponent, "bar")
+		XCTAssertEqual("abcd".spot.substring(from: 0, to: 2), "ab")
+		XCTAssertEqual("abcd".spot.substring(from: 1, to: -1), "bcd")
+		XCTAssertEqual("abcd".spot.substring(from: -3, to: -1), "cd")
+		XCTAssertEqual("abcd".spot.char(at: 2), "c")
+		XCTAssertEqual("abcd".spot.char(at: -2), nil)
+		XCTAssertEqual("<b>&'\"".spot.encodedHTMLSpecialCharacters, "&lt;b&gt;&amp;&apos;&quot;")
+		XCTAssertEqual("a=1&b=2".spot.parsedQueryString, ["a": "1", "b": "2"])
+		XCTAssertEqual("True".spot.boolValue, true)
+		XCTAssertEqual("true".spot.boolValue, true)
+		XCTAssertEqual("100".spot.boolValue, true)
+		XCTAssertEqual("yes".spot.boolValue, true)
+		XCTAssertEqual(" true".spot.boolValue, false)
+	}
+	
+	// MARK: -
 	
 	func testDecimalColor() {
 		#if canImport(UIKit)
