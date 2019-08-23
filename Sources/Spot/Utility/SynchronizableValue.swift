@@ -44,17 +44,19 @@ public struct SynchronizableValue<T> {
 		}
 	}
 	
-	public mutating func waitAndSet(with fn: (inout T)->Void) {
+	public mutating func waitAndSet<R>(with fn: (inout T)->R) -> R {
 		lock.wait()
-		fn(&value)
+		let r = fn(&value)
 		lock.signal()
+		return r
 	}
 	
-	public mutating func waitAndSet(with fn: (inout T)->Void, timeout: DispatchTime) throws {
+	public mutating func waitAndSet<R>(with fn: (inout T)->R, timeout: DispatchTime) throws -> R {
 		switch lock.wait(timeout: timeout) {
 		case .success:
-			fn(&value)
+			let r = fn(&value)
 			lock.signal()
+			return r
 		case .timedOut:
 			throw AttributedError(.timeout)
 		}
