@@ -44,6 +44,7 @@ public struct SynchronizableValue<T> {
 		}
 	}
 	
+	@discardableResult
 	public mutating func waitAndSet<R>(with fn: (inout T)->R) -> R {
 		lock.wait()
 		let r = fn(&value)
@@ -51,6 +52,7 @@ public struct SynchronizableValue<T> {
 		return r
 	}
 	
+	@discardableResult
 	public mutating func waitAndSet<R>(with fn: (inout T)->R, timeout: DispatchTime) throws -> R {
 		switch lock.wait(timeout: timeout) {
 		case .success:
