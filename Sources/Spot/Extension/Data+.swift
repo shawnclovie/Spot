@@ -10,12 +10,12 @@ import Foundation
 
 extension Data: SuffixProtocol {
 	public enum Source {
-		case url(URL)
+		case path(URL)
 		case data(Data)
 		
-		public var url: URL? {
-			if case .url(let url) = self {
-				return url
+		public var path: URL? {
+			if case .path(let path) = self {
+				return path
 			}
 			return nil
 		}
@@ -23,7 +23,7 @@ extension Data: SuffixProtocol {
 		public var data: Data? {
 			switch self {
 			case .data(let data):	return data
-			case .url(let url):		return (try? Data(contentsOf: url))
+			case .path(let path):	return (try? Data(contentsOf: path))
 			}
 		}
 	}
