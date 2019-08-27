@@ -43,8 +43,8 @@ public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessi
 				sessionTask = session.uploadTask(with: task.urlRequest, from: task.urlRequest.httpBody ?? Data())
 			case .upload(let source):
 				switch source {
-				case .url(let url):
-					sessionTask = session.uploadTask(with: task.urlRequest, fromFile: url)
+				case .path(let it):
+					sessionTask = session.uploadTask(with: task.urlRequest, fromFile: it)
 				case .data(let data):
 					sessionTask = session.uploadTask(with: task.urlRequest, from: data)
 				}
