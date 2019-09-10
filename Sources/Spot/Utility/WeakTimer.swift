@@ -20,10 +20,6 @@ public final class WeakTimer: NSObject {
 	private var timer: Timer?
 	private var invoker: Invoker?
 	
-	public var userInfo: Any? {
-		timer?.userInfo
-	}
-	
 	public init(interval: TimeInterval, repeats: Bool, userInfo: Any? = nil, handler: @escaping (WeakTimer)->Void) {
 		invoker = .closure(handler)
 		super.init()
@@ -35,6 +31,12 @@ public final class WeakTimer: NSObject {
 		super.init()
 		resetTimer(interval, repeats: repeats, userInfo: userInfo)
 	}
+	
+	public var isValid: Bool {timer?.isValid ?? false}
+	
+	public var tolerance: TimeInterval {timer?.tolerance ?? 0}
+	
+	public var userInfo: Any? {timer?.userInfo}
 	
 	public func invalidate() {
 		timer?.invalidate()
