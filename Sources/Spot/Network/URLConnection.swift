@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 #endif
 
-public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDelegate {
+open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDelegate {
 	
 	private static var runningInstances: Set<URLConnection> = []
 	
@@ -84,29 +84,29 @@ public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessi
 	
 	// MARK: Download Task Delegate
 	
-	public func urlSession(_ session: URLSession,
-	                       downloadTask: URLSessionDownloadTask,
-	                       didWriteData bytesWritten: Int64,
-	                       totalBytesWritten: Int64,
-	                       totalBytesExpectedToWrite: Int64) {
+	open func urlSession(_ session: URLSession,
+	                     downloadTask: URLSessionDownloadTask,
+	                     didWriteData bytesWritten: Int64,
+	                     totalBytesWritten: Int64,
+	                     totalBytesExpectedToWrite: Int64) {
 		guard let task = tasks[downloadTask.taskIdentifier]?.task else {return}
 		task.didProgress(.init(bytesWritten: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite))
 	}
 	
-	public func urlSession(_ session: URLSession,
-	                       downloadTask: URLSessionDownloadTask,
-	                       didFinishDownloadingTo location: URL) {
+	open func urlSession(_ session: URLSession,
+	                     downloadTask: URLSessionDownloadTask,
+	                     didFinishDownloadingTo location: URL) {
 		guard let task = tasks[downloadTask.taskIdentifier]?.task else {return}
 		task.didDownload(to: location)
 	}
 	
 	// MARK: Upload Task
 	
-	public func urlSession(_ session: URLSession,
-	                       task: URLSessionTask,
-	                       didSendBodyData bytesSent: Int64,
-	                       totalBytesSent: Int64,
-	                       totalBytesExpectedToSend: Int64) {
+	open func urlSession(_ session: URLSession,
+	                     task: URLSessionTask,
+	                     didSendBodyData bytesSent: Int64,
+	                     totalBytesSent: Int64,
+	                     totalBytesExpectedToSend: Int64) {
 		guard let task = tasks[task.taskIdentifier]?.task else {return}
 		let progress = URLTask.Progress(
 			bytesWritten: bytesSent,
@@ -117,10 +117,10 @@ public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessi
 	
 	// MARK: Data Task Delegate
 	
-	public func urlSession(_ session: URLSession,
-	                       dataTask: URLSessionDataTask,
-	                       didReceive response: URLResponse,
-	                       completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+	open func urlSession(_ session: URLSession,
+						 dataTask: URLSessionDataTask,
+	                     didReceive response: URLResponse,
+	                     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
 		guard let task = tasks[dataTask.taskIdentifier]?.task else {return}
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: true)
@@ -129,18 +129,17 @@ public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessi
 		completionHandler(.allow)
 	}
 	
-	public func urlSession(_ session: URLSession,
-	                       dataTask: URLSessionDataTask,
-	                       didReceive data: Data) {
+	open func urlSession(_ session: URLSession,
+						 dataTask: URLSessionDataTask,
+						 didReceive data: Data) {
 		guard let task = tasks[dataTask.taskIdentifier]?.task else {return}
 		task.didReceive(data)
 	}
 	
 	// MARK: Task Delegate
 	
-	public func urlSession(_ session: URLSession,
-	                       task: URLSessionTask,
-	                       didCompleteWithError error: Error?) {
+	open func urlSession(_ session: URLSession, task: URLSessionTask,
+						 didCompleteWithError error: Error?) {
 		guard let task = tasks[task.taskIdentifier]?.task else {return}
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: false)
@@ -149,8 +148,7 @@ public final class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessi
 		task.didComplete(with: error.map{.init(.network, original: $0)})
 	}
 	
-	public func urlSession(_ session: URLSession,
-	                       didBecomeInvalidWithError error: Error?) {
+	open func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: false)
 		#endif

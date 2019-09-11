@@ -65,6 +65,7 @@ public final class URLTask: Hashable {
 	
 	public let mode: Mode
 	public private(set) var respondData = Data()
+	/// Queue to call each progress, complete and downloaded events.
 	private var handlerQueue: DispatchQueue = .main
 	private weak var connection: URLConnection?
 	#if os(iOS)
@@ -177,6 +178,7 @@ public final class URLTask: Hashable {
 		if isRunning {
 			cancel()
 		}
+		respondData.removeAll()
 		connection = conn
 		handlerQueue = queue
 		if let fn = progression {

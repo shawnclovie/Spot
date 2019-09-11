@@ -21,9 +21,9 @@ opq
 \(Date().timeIntervalSince1970 * 1000)
 """
 
+let logger = Logger(tag: "\(SpotTests.self)", for: .trace)
+
 class SpotTests: XCTestCase {
-	
-	let logger = Logger(tag: "\(classForCoder())", for: .trace)
     
     override func setUp() {
         super.setUp()
@@ -146,7 +146,7 @@ class SpotTests: XCTestCase {
 		logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.jpg"))
 		logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.ppt"))
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-			self.logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.m"))
+			logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.m"))
 			expections[0].fulfill()
 		}
 		wait(for: expections, timeout: 10)
@@ -193,7 +193,7 @@ class SpotTests: XCTestCase {
 			let exp = XCTestExpectation()
 			exps.append(exp)
 			URLTask(.spot(.get, URL(string: "https://media.riffsy.com/images/5ce76a640011902a79b484da92b0d7db/raw")!)).request(with: conn) { task, result in
-				self.logger.logWithFileInfo(.debug, result)
+				logger.logWithFileInfo(.debug, result)
 				if NetworkObserver.withWiFi!.currentStatus == .notReachable {
 					XCTAssertNil(try? result.get())
 				} else {
@@ -211,6 +211,30 @@ class SpotTests: XCTestCase {
 			}
 		}
 		wait(for: exps, timeout: 10)
+	}
+
+	class AllowAllConnection: URLConnection {
+		static let shared = AllowAllConnection()
+		
+		func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+			logger.logWithFileInfo(.trace, challenge)
+			completionHandler(.useCredential, challenge.protectionSpace.serverTrust.map(URLCredential.init(trust:)))
+		}
+	}
+	
+	func testURLTaskUntrustCA() {
+		let url = URL(string: "https://image.haosou.com/j?q=acg&src=srp&sn=0&pn=24")!
+		let exp = XCTestExpectation()
+		URLTask(.spot(.get, url)).request(with: AllowAllConnection.shared) { (task, result) in
+			do {
+				let data = try result.get()
+				print(String(data: data, encoding: .utf8)!)
+			} catch {
+				XCTFail("\(error)")
+			}
+			exp.fulfill()
+		}
+		wait(for: [exp], timeout: 5)
 	}
 	
 	func testDrawAndEncode() {
