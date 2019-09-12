@@ -237,6 +237,15 @@ class SpotTests: XCTestCase {
 		wait(for: [exp], timeout: 5)
 	}
 	
+	func testVersion() {
+		let text = "[2.5.9]"
+		let v1 = Version("2.5.9")
+		XCTAssertEqual(v1, Version(text.dropFirst().dropLast()))
+		XCTAssertEqual(v1, Version(2, 5, 9, 0))
+		XCTAssert(v1 > Version(2, 5))
+		XCTAssert(v1 < Version(3))
+	}
+	
 	func testDrawAndEncode() {
 		let image: CGImage? = CGContext.spot(width: 100, height: 100) { ctx in
 			ctx.setFillColor(DecimalColor(rgb: 0xFF0000).cgColor)

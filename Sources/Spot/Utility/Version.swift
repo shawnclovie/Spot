@@ -13,26 +13,6 @@ import UIKit
 import AppKit
 #endif
 
-public func < (lhs: Version, rhs: Version) -> Bool {
-	lhs.compare(to: rhs) == .orderedAscending
-}
-
-public func > (lhs: Version, rhs: Version) -> Bool {
-	lhs.compare(to: rhs) == .orderedDescending
-}
-
-public func == (lhs: Version, rhs: Version) -> Bool {
-	lhs.compare(to: rhs) == .orderedSame
-}
-
-public func <= (lhs: Version, rhs: Version) -> Bool {
-	lhs.compare(to: rhs) != .orderedDescending
-}
-
-public func >= (lhs: Version, rhs: Version) -> Bool {
-	lhs.compare(to: rhs) != .orderedAscending
-}
-
 /// Version with some code numbers.
 public struct Version: CustomStringConvertible {
 	
@@ -44,7 +24,11 @@ public struct Version: CustomStringConvertible {
 	///   - version: Version string
 	///   - separator: Separator, default is ".".
 	public init(_ version: String, separator: String = ".") {
-		let components = version.components(separatedBy: separator)
+		self.init(version[...], separator: separator)
+	}
+	
+	init(_ ver: String.SubSequence, separator: String = ".") {
+		let components = ver.components(separatedBy: separator)
 		for comp in components {
 			if let number = UInt(comp) {
 				numbers.append(number)
@@ -113,5 +97,27 @@ public struct Version: CustomStringConvertible {
 				guard let value = element.value as? Int8, value != 0 else {return identifier}
 				return identifier + String(UnicodeScalar(UInt8(value)))
 		}
+	}
+}
+
+extension Version: Comparable {
+	public static func ==(l: Self, r: Self) -> Bool {
+		l.compare(to: r) == .orderedSame
+	}
+	
+	public static func >(l: Self, r: Self) -> Bool {
+		l.compare(to: r) == .orderedDescending
+	}
+	
+	public static func >=(l: Self, r: Self) -> Bool {
+		l.compare(to: r) != .orderedAscending
+	}
+	
+	public static func <(l: Self, r: Self) -> Bool {
+		l.compare(to: r) == .orderedAscending
+	}
+	
+	public static func <=(l: Self, r: Self) -> Bool {
+		l.compare(to: r) != .orderedDescending
 	}
 }
