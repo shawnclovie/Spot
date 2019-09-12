@@ -27,7 +27,7 @@ public struct Version: CustomStringConvertible {
 		self.init(version[...], separator: separator)
 	}
 	
-	init(_ ver: String.SubSequence, separator: String = ".") {
+	public init(_ ver: String.SubSequence, separator: String = ".") {
 		let components = ver.components(separatedBy: separator)
 		for comp in components {
 			if let number = UInt(comp) {
