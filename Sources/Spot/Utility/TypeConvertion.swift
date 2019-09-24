@@ -21,7 +21,6 @@ public func AnyToInt64(_ v: Any?) -> Int64? {
 	case let v as UInt64:		return Int64(v)
 	case let v as Double:		return Int64(v)
 	case let v as Float:		return Int64(v)
-	case let v as Float80:		return Int64(v)
 	case let v as Bool:			return v ? 1 : 0
 	case let v as String:		return Int64(v)
 	case let v as Substring:	return Int64(v)
@@ -46,7 +45,6 @@ public func AnyToDouble(_ v: Any?) -> Double? {
 	case let v as UInt64:		return Double(v)
 	case let v as Double:		return v
 	case let v as Float:		return Double(v)
-	case let v as Float80:		return Double(v)
 	case let v as Bool:			return v ? 1 : 0
 	case let v as String:		return Double(v)
 	case let v as Substring:	return Double(v)
