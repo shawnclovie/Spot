@@ -436,4 +436,35 @@ class SpotTests: XCTestCase {
 	@objc private func textEvent(_ a: String) {
 		logger.logWithFileInfo(.trace, a)
 	}
+	
+	func testAnyTo() {
+		let m: [AnyHashable: Any] = [
+			"d": 1.0, "i": 1, "b": true,
+			"si": "1", "sd": "1.0",
+			"sy": "yes", "st": "true",
+		]
+		XCTAssertEqual(Int.max, AnyToInt(Int64.max))
+		XCTAssertEqual(1, AnyToInt(1.1))
+		XCTAssertEqual(1, AnyToInt(m["si"]))
+		XCTAssertEqual(1, AnyToInt(m["b"]))
+		XCTAssertEqual(0, AnyToInt(false))
+		XCTAssertEqual(nil, AnyToInt(""))
+		XCTAssertNotEqual(1, AnyToInt(nil))
+		XCTAssertEqual(1.0, AnyToDouble(m["i"]))
+		XCTAssertEqual(1.0, AnyToDouble(m["sd"]))
+		XCTAssertEqual(1.0, AnyToDouble(m["b"]))
+		XCTAssertEqual(0, AnyToDouble(false))
+		XCTAssertEqual(nil, AnyToDouble(""))
+		XCTAssertEqual(true, AnyToBool(m["i"]))
+		XCTAssertEqual(true, AnyToBool(m["d"]))
+		XCTAssertEqual(true, AnyToBool(m["sy"]))
+		XCTAssertEqual(true, AnyToBool(m["st"]))
+		XCTAssertEqual(nil, AnyToBool(nil))
+		XCTAssertEqual(false, AnyToBool(0))
+		XCTAssertEqual(nil, AnyToBool(""))
+		
+		XCTAssertEqual(9223372036854775807, AnyToInt64("9223372036854775807"))
+		XCTAssertEqual(1, AnyToInt64(1))
+		XCTAssertEqual(1, AnyToInt64(1.1))
+	}
 }
