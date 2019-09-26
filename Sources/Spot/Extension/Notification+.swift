@@ -1,5 +1,5 @@
 //
-//  Spot.swift
+//  Notification+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 30/09/2016.

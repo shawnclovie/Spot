@@ -1,5 +1,5 @@
 //
-//  NSData+Extension.swift
+//  Data+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 5/10/16.

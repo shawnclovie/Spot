@@ -1,6 +1,6 @@
 //
 //  Ref.swift
-//  Spot iOS
+//  Spot
 //
 //  Created by Shawn Clovie on 4/7/2018.
 //  Copyright © 2018 Shawn Clovie. All rights reserved.

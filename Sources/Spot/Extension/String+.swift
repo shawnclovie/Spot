@@ -1,5 +1,5 @@
 //
-//  String+Extension.swift
+//  String+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 5/10/16.

@@ -1,5 +1,5 @@
 //
-//  Dictionary+Extension.swift
+//  Collection+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 5/4/16.

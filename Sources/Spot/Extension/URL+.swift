@@ -1,5 +1,5 @@
 //
-//  URL+Extension.swift
+//  URL+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 1/9/2017.

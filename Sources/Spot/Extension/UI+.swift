@@ -1,5 +1,5 @@
 //
-//  ViewContentMode+extension.swift
+//  UI+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 9/10/2017.

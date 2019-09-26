@@ -1,5 +1,5 @@
 //
-//  CGContext+extension.swift
+//  CGContext+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 28/10/2017.

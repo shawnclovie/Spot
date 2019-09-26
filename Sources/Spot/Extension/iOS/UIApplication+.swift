@@ -13,6 +13,7 @@ private var networkActivityIndicatorVisibleCount = SynchronizableValue(0)
 
 extension Suffix where Base: UIApplication {
 	
+	// MARK: - NetworkActivityIndicator
 	public var isNetworkActivityIndicatorVisible: Bool {
 		networkActivityIndicatorVisibleCount.get() > 0
 	}
@@ -26,6 +27,32 @@ extension Suffix where Base: UIApplication {
 			}
 		}
 	}
+	
+	// MARK: - UserNotification
+	
+	/// Present UserNotification request dialog, it would only worked once.
+	public func requestUserNotificationAuthorization() {
+		if #available(iOS 10.0, *) {
+			UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+				if granted {
+					self.requestDeviceToken()
+				}
+			}
+		} else {
+			let settings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+			UIApplication.shared.registerUserNotificationSettings(settings)
+		}
+	}
+	
+	public func requestDeviceToken() {
+		#if !(arch(i386) || arch(x86_64))
+		DispatchQueue.main.async {
+			UIApplication.shared.registerForRemoteNotifications()
+		}
+		#endif
+	}
+
+	// MARK: -
 	
 	public func open(_ url: URL, options: [String: Any] = [:], completion: ((Bool)->Void)? = nil) {
 		if #available(iOS 10.0, *) {

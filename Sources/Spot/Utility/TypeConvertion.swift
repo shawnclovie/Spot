@@ -1,11 +1,13 @@
 //
 //  TypeConvertion.swift
-//  
+//  Spot
 //
 //  Created by Shawn Clovie on 24/9/2019.
+//  Copyright © 2019 Shawn Clovie. All rights reserved.
 //
 
 import Foundation
+import struct CoreGraphics.CGFloat
 
 public func AnyToInt64(_ v: Any?) -> Int64? {
 	switch v {
@@ -21,6 +23,7 @@ public func AnyToInt64(_ v: Any?) -> Int64? {
 	case let v as UInt64:		return Int64(v)
 	case let v as Double:		return Int64(v)
 	case let v as Float:		return Int64(v)
+	case let v as CGFloat:		return Int64(v)
 	case let v as Bool:			return v ? 1 : 0
 	case let v as String:		return Int64(v)
 	case let v as Substring:	return Int64(v)
@@ -45,6 +48,7 @@ public func AnyToDouble(_ v: Any?) -> Double? {
 	case let v as UInt64:		return Double(v)
 	case let v as Double:		return v
 	case let v as Float:		return Double(v)
+	case let v as CGFloat:		return Double(v)
 	case let v as Bool:			return v ? 1 : 0
 	case let v as String:		return Double(v)
 	case let v as Substring:	return Double(v)

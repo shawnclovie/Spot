@@ -1,5 +1,5 @@
 //
-//  GCD.swift
+//  DispatchQueue.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 4/5/16.

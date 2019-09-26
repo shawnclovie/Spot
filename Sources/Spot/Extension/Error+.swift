@@ -1,5 +1,5 @@
 //
-//  Error+extension.swift
+//  Error+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 7/10/2017.

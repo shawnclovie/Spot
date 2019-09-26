@@ -1,5 +1,5 @@
 //
-//  Bundle+Extension.swift
+//  Bundle+.swift
 //  Spot
 //
 //  Created by Shawn Clovie on 22/12/2016.
