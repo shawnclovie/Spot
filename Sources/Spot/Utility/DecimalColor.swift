@@ -123,11 +123,10 @@ extension DecimalColor {
 					  blue: UInt8(comps[2] * max), alpha: UInt8(comps[3] * max))
 		} else {
 			#if canImport(UIKit)
-			let color = UIColor(cgColor: cgColor)
-			#elseif canImport(AppKit)
-			let color = NSColor(cgColor: cgColor) ?? .init()
+			self = .init(with: UIColor(cgColor: cgColor))
+			#else
+			fatalError("only UIKit supported here.")
 			#endif
-			self = .init(with: color)
 		}
 	}
 	
@@ -135,7 +134,11 @@ extension DecimalColor {
 		if let cg = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: [floatRed, floatGreen, floatBlue, floatAlpha]) {
 			return cg
 		}
+		#if canImport(UIKit)
 		return colorValue.cgColor
+		#else
+		fatalError("only UIKit supported here.")
+		#endif
 	}
 }
 
@@ -172,25 +175,6 @@ extension DecimalColor {
 	}
 	
 	public var colorValue: UIColor {
-		.init(red: floatRed, green: floatGreen, blue: floatBlue, alpha: floatAlpha)
-	}
-}
-#endif
-
-#if canImport(AppKit)
-import AppKit
-
-extension DecimalColor {
-	public init(with color: NSColor) {
-		var r: CGFloat = 0
-		var g: CGFloat = 0
-		var b: CGFloat = 0
-		var a: CGFloat = 0
-		color.getRed(&r, green: &g, blue: &b, alpha: &a)
-		self.init(floatRed: r, green: g, blue: b, alpha: a)
-	}
-	
-	public var colorValue: NSColor {
 		.init(red: floatRed, green: floatGreen, blue: floatBlue, alpha: floatAlpha)
 	}
 }

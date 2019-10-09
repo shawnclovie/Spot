@@ -95,10 +95,10 @@ class SpotTests: XCTestCase {
 		XCTAssert(DecimalColor.black == .init(with: .black))
 		XCTAssert(DecimalColor.white == .init(with: .white))
 		XCTAssert(DecimalColor(cgColor: UIColor.red.cgColor).red == UInt8.max)
-		#endif
 		XCTAssert(DecimalColor(rgb: 0xff0000) == .init(with: .red))
 		XCTAssert(DecimalColor(hexARGB: "#ffff0000")! == .init(with: .red))
 		XCTAssert(DecimalColor(rgb: 0xff0000) == .init(with: .init(red: 1, green: 0, blue: 0, alpha: 1)))
+		#endif
 		XCTAssert(DecimalColor(floatRed: 2, green: 0, blue: 0, alpha: 1).red == .max)
 		var values: [DecimalColor] = [
 			.clear,
