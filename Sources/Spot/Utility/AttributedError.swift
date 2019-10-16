@@ -35,7 +35,7 @@ public struct AttributedError: Error, ErrorConvertable, LocalizedDescriptable {
 	
 	public init(with err: Error, _ source: Source) {
 		if let err = err as? AttributedError {
-			self.init(source, object: err.object, original: err.original, userInfo: err.userInfo)
+			self = err
 		} else {
 			self.init(source, original: err)
 		}
