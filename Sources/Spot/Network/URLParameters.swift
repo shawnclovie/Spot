@@ -39,8 +39,8 @@ public struct URLParameters {
 		return values[i]
 	}
 	
-	public var keyValuePairs: [(String, Any)] {
-		var pairs: [(String, Any)] = []
+	public var keyValuePairs: URLKeyValuePairs {
+		var pairs: URLKeyValuePairs = []
 		pairs.reserveCapacity(values.count)
 		for it in keys.sorted(by: { (l, r) in l.key < r.key}) {
 			for value in values[it.value] {
@@ -48,6 +48,20 @@ public struct URLParameters {
 			}
 		}
 		return pairs
+	}
+	
+	public var encodedDictionary: [String: Any] {
+		var dict: [String: Any] = [:]
+		dict.reserveCapacity(values.count)
+		for it in keys {
+			let vs = values[it.value]
+			switch vs.count {
+			case 1:		dict[it.key] = vs[0]
+			case 0:		break
+			default:	dict[it.key] = vs
+			}
+		}
+		return dict
 	}
 	
 	public mutating func append(_ key: String, _ value: Any) {

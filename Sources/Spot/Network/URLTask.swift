@@ -45,13 +45,15 @@ public final class URLTask: Hashable {
 		}
 	}
 	
-	public static let mimeTypeOctet = "application/octet-stream"
+	public static let contentTypeKey = "Content-Type"
+	public static let contentTypeJSON = "application/json"
+	public static let contentTypeOctet = "application/octet-stream"
 	
 	public static func mimeType(filename: String) -> String {
 		guard let ext = filename.spot.pathExtension,
 			let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext as CFString, nil),
 			let type = UTTypeCopyPreferredTagWithClass(uti.takeRetainedValue(), kUTTagClassMIMEType)
-			else {return mimeTypeOctet}
+			else {return contentTypeOctet}
 		return type.takeRetainedValue() as String
 	}
 	
@@ -121,7 +123,8 @@ public final class URLTask: Hashable {
 	@discardableResult
 	public func set(parameters: [String: Any], _ encType: FormEncodeType = .urlEncoded) -> Self {
 		if !isRunning {
-			var params: [(String, Any)] = []
+			var params: URLKeyValuePairs = []
+			params.reserveCapacity(parameters.count)
 			for (key, value) in parameters {
 				params.append((key, value))
 			}
@@ -130,10 +133,11 @@ public final class URLTask: Hashable {
 		return self
 	}
 	
+	/// - Throws: If parameter's Content-Type is application/json, encode parameters.dictionaryValue may cause error
 	@discardableResult
-	public func set(parameters: URLParameters, _ encType: FormEncodeType = .urlEncoded) -> Self {
+	public func set(parameters: URLParameters) throws -> Self {
 		if !isRunning {
-			urlRequest.spot_set(parameters: parameters, encType)
+			try urlRequest.spot_set(parameters: parameters)
 		}
 		return self
 	}
@@ -144,7 +148,7 @@ public final class URLTask: Hashable {
 	///   - parameters: Parameters, as query string for get, as http body otherwise.
 	///   - encType: Parameters encode type, equals "enctype" in html <form>.
 	@discardableResult
-	public func set(parameters: [(String, Any)], _ encType: FormEncodeType = .urlEncoded) -> Self {
+	public func set(parameters: URLKeyValuePairs, _ encType: FormEncodeType = .urlEncoded) -> Self {
 		if !isRunning {
 			urlRequest.spot_set(parameters: parameters, encType)
 		}

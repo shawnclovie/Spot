@@ -21,7 +21,7 @@ extension String: SuffixProtocol {
 	///   - parameters: Parameters
 	///   - encode: If encode parameters
 	/// - Returns: Query string with encoded if needed
-	public static func spot(queryString parameters: [(String, Any)], encode: Bool = true) -> String {
+	public static func spot(queryString parameters: URLKeyValuePairs, encode: Bool = true) -> String {
 		let allowedChars: CharacterSet = encode ? .urlQueryAllowed : .whitespaces
 		var query: [String] = []
 		for (key, value) in parameters {
@@ -46,7 +46,8 @@ extension String: SuffixProtocol {
 	}
 	
 	public static func spot(queryString parameters: [AnyHashable: Any], encode: Bool = true) -> String {
-		var pairs: [(String, Any)] = []
+		var pairs: URLKeyValuePairs = []
+		pairs.reserveCapacity(parameters.count)
 		for (key, value) in parameters {
 			let key = String(describing: key)
 			pairs.append((key, value))

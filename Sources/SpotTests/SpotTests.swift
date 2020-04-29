@@ -179,9 +179,12 @@ class SpotTests: XCTestCase {
 			let exp = XCTestExpectation()
 			exps.append(exp)
 			let task = URLTask(.spot(.post, URL(string: "http://localhost:8080/social/activities")!))
-			task.set(parameters: URLParameters([
+			try! task.set(parameters: URLParameters([
 				"app": "memo_test", "limit": 20, "type": "ex_event", "events": "s", "from": "all"
-				], headers: ["Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiOTE1MjAyNjY1Nzc5MDQwMjU3IiwiYXV0aF90eXBlIjoiZW0iLCJ1c2VyX2lkIjoiOTE1MjAyNjY1Nzc5MDQwMjU2In0.uJ3VrGvtlBcJumqEfSVeNKgullweVEAbF1E7DcsIFlU"]))
+				], headers: [
+					"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiOTE1MjAyNjY1Nzc5MDQwMjU3IiwiYXV0aF90eXBlIjoiZW0iLCJ1c2VyX2lkIjoiOTE1MjAyNjY1Nzc5MDQwMjU2In0.uJ3VrGvtlBcJumqEfSVeNKgullweVEAbF1E7DcsIFlU",
+					URLTask.contentTypeKey: URLTask.contentTypeJSON,
+			]))
 			task.request(with: conn) { task, result in
 				if case .success(let data) = result {
 					print(String(data: data, encoding: .utf8) as Any)
