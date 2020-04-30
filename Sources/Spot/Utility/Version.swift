@@ -55,6 +55,21 @@ public struct Version: CustomStringConvertible {
 		numbers.map{String($0)}.joined(separator: ".")
 	}
 	
+	/// Convert version as one number like 20509 from 2.5.9
+	/// - Parameters:
+	///   - count: Count of segment, should >= 1
+	///   - length: Length of each segment, should >= 1
+	public func segmentNumber(count: Int = 3, length: Int = 2) -> UInt {
+		let count = max(count, 1)
+		let length = max(length, 1)
+		var num: UInt = 0
+		for i in 0..<count {
+			let p = pow(10, Double(count - i - 1) * Double(length))
+			num += self[i] * UInt(p)
+		}
+		return num
+	}
+	
 	/// Compare two version object.
 	///
 	/// - Parameters:

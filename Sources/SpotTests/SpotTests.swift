@@ -241,12 +241,15 @@ class SpotTests: XCTestCase {
 	}
 	
 	func testVersion() {
-		let text = "[2.5.9]"
-		let v1 = Version("2.5.9")
+		let text = "[2.5.19]"
+		let v1 = Version("2.5.19")
 		XCTAssertEqual(v1, Version(text.dropFirst().dropLast()))
-		XCTAssertEqual(v1, Version(2, 5, 9, 0))
+		XCTAssertEqual(v1, Version(2, 5, 19, 0))
 		XCTAssert(v1 > Version(2, 5))
 		XCTAssert(v1 < Version(3))
+		XCTAssertEqual(v1.segmentNumber(count: 3, length: 2), 20519)
+		XCTAssertEqual(v1.segmentNumber(count: 4, length: 2), 2051900)
+		XCTAssertEqual(v1.segmentNumber(count: 3, length: 0), 269)
 	}
 	
 	func testDrawAndEncode() {

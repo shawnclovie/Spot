@@ -112,4 +112,15 @@ public struct URLParameters {
 		guard let i = keys.removeValue(forKey: key) else {return nil}
 		return values.remove(at: i)
 	}
+	
+	public var contentType: String? {
+		get {headers[URLTask.contentTypeKey]}
+		set {
+			if let v = newValue {
+				headers[URLTask.contentTypeKey] = v
+			} else {
+				headers.removeValue(forKey: URLTask.contentTypeKey)
+			}
+		}
+	}
 }
