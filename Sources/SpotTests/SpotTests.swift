@@ -292,7 +292,8 @@ class SpotTests: XCTestCase {
 		}
 		print("randomData:", randomData.map {$0})
 		let key = "12341234123412341234123412341234"
-		let cryptor = SymmetricCryptor(algorithm: .aes256)
+		var cryptor = SymmetricCryptor(algorithm: .aes256)
+		cryptor.setRandomIV()
 		do {
 			let crypted = try cryptor.crypt(randomData, key: key)
 			let decrypted = try cryptor.decrypt(crypted, key: key)

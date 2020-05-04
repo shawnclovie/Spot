@@ -42,7 +42,7 @@ public struct SymmetricCryptor {
 		}
 		
 		// Returns the needed size for the IV to be used in the algorithm (0 if no IV is needed).
-		func requiredIVSize(_ options: Options) -> Int {
+		public func requiredIVSize(_ options: Options) -> Int {
 			// if kCCOptionECBMode is specified, no IV is needed.
 			guard !options.contains(.ecbMode) else {
 				return 0
@@ -58,7 +58,7 @@ public struct SymmetricCryptor {
 			}
 		}
 		
-		var requiredKeySize: Int {
+		public var requiredKeySize: Int {
 			switch (self) {
 			case .des:		return kCCKeySizeDES
 			case .des40:	return 5 // 40 bits = 5x8
@@ -72,7 +72,7 @@ public struct SymmetricCryptor {
 			}
 		}
 		
-		var requiredBlockSize: Int {
+		public var requiredBlockSize: Int {
 			switch (self) {
 			case .des, .des40:		return kCCBlockSizeDES
 			case .tripledes:		return kCCBlockSize3DES
@@ -121,7 +121,11 @@ public struct SymmetricCryptor {
 	// Initialization Vector
 	public private(set) var iv: Data?
 	
-	public init(algorithm: Algorithm, options: Options = [.ecbMode, .pkcs7Padding], iv: Data? = nil) {
+	/// - Parameters:
+	///   - algorithm: Algorithm
+	///   - options: Options for mode and padding, CBC mode and PKCS7 by default
+	///   - iv: Initialization Vector for CBC mode
+	public init(algorithm: Algorithm, options: Options = [.pkcs7Padding], iv: Data? = nil) {
 		self.algorithm = algorithm
 		self.options = options
 		self.iv = iv
