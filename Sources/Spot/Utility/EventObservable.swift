@@ -75,8 +75,8 @@ public final class EventObservable<T> {
 	public func invalidate(target: AnyObject) {
 		syncQueue.sync {
 			for (key, closure) in closures {
-				guard case .weakTargetAction(let it) = closure,
-					it.target.object === target else {continue}
+				guard case .weakTargetAction(let tar, _) = closure,
+					tar.object === target else {continue}
 				closures.removeValue(forKey: key)
 			}
 		}
@@ -99,12 +99,12 @@ public final class EventObservable<T> {
 			switch $0 {
 			case .closure(let fn):
 				fn(v)
-			case .weakTargetAction(let it):
-				guard let target = it.target.object,
-					target.responds(to: it.action),
-					let imp = target.method(for: it.action) else {break}
+			case .weakTargetAction(let tar, let action):
+				guard let target = tar.object,
+					target.responds(to: action),
+					let imp = target.method(for: action) else {break}
 				let method = unsafeBitCast(imp, to: TargetActionSelectorIMP.self)
-				method(target, it.action, v)
+				method(target, action, v)
 			}
 		}
 	}

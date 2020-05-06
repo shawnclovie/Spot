@@ -309,6 +309,9 @@ class SpotTests: XCTestCase {
 		} catch {
 			XCTFail("\(error)")
 		}
+		
+		let hashed = HashAlgorithm.sha512.hash(randomData)
+		print("hashed:", hashed.spot.hexString)
 	}
 	
 	func makeCGImage(size: CGSize, color: CGColor, closure: ((CGContext)->Void)? = nil) -> CGImage? {

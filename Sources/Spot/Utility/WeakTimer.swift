@@ -56,10 +56,10 @@ public final class WeakTimer: NSObject {
 		switch invoker {
 		case .closure(let handler):
 			handler(self)
-		case .target(let it):
-			if let target = it.ref.object, target.responds(to: it.action) {
-				let method = unsafeBitCast(target.method(for: it.action), to: SelectorIMP.self)
-				method(target, it.action, self)
+		case .target(let ref, let action):
+			if let target = ref.object, target.responds(to: action) {
+				let method = unsafeBitCast(target.method(for: action), to: SelectorIMP.self)
+				method(target, action, self)
 			}
 		}
 	}
