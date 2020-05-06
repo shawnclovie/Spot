@@ -160,4 +160,21 @@ extension Suffix where Base == String {
 	public var boolValue: Bool {
 		Substring(base).spot.boolValue
 	}
+	
+	// MARK: URL Safe Base64
+	
+	public var encodedURLSafeBase64: String {
+		base
+			.replacingOccurrences(of: "+", with: "-")
+			.replacingOccurrences(of: "/", with: "_")
+			.replacingOccurrences(of: "=", with: "")
+	}
+	
+	public var decodedURLSafeBase64: String {
+		let rem = base.count % 4
+		let ending = rem > 0 ? String(repeating: "=", count: 4 - rem) : ""
+		return base
+			.replacingOccurrences(of: "-", with: "+")
+			.replacingOccurrences(of: "_", with: "/") + ending
+	}
 }
