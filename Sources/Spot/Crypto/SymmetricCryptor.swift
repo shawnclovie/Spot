@@ -12,7 +12,6 @@ import CommonCrypto
 private let RandomStringGeneratorCharset: [Character] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".map({$0})
 
 public enum SymmetricCryptorError: Error {
-	case keyEncodingFailed
 	case missingIV
 	case operationFailed(status: CCCryptorStatus)
 	case wrongInputData
@@ -136,30 +135,27 @@ public struct SymmetricCryptor {
 		iv = SymmetricCryptor.randomData(of: length)
 	}
 	
-	public func crypt(_ string: String, key: String) throws -> Data {
+	public func encrypt(_ string: String, key: Data) throws -> Data {
 		try cryptoOperation(Data(string.utf8), key: key, operation: CCOperation(kCCEncrypt))
 	}
 	
-	public func crypt(_ data: Data, key: String) throws -> Data {
+	public func encrypt(_ data: Data, key: Data) throws -> Data {
 		try cryptoOperation(data, key: key, operation: CCOperation(kCCEncrypt))
 	}
 	
-	public func decrypt(_ data: Data, key: String) throws -> Data  {
+	public func decrypt(_ data: Data, key: Data) throws -> Data  {
 		try cryptoOperation(data, key: key, operation: CCOperation(kCCDecrypt))
 	}
 	
-	private func cryptoOperation(_ input: Data, key: String, operation: CCOperation) throws -> Data {
+	private func cryptoOperation(_ input: Data, key: Data, operation: CCOperation) throws -> Data {
 		// Validation checks.
 		if iv == nil && !options.contains(.ecbMode) {
 			throw SymmetricCryptorError.missingIV
 		}
-		guard let keyData = key.data(using: .utf8, allowLossyConversion: false) else {
-			throw SymmetricCryptorError.keyEncodingFailed
-		}
 		var bytesDecrypted = 0
 		let bufCount = input.count + algorithm.requiredBlockSize
 		var bufData = Data(count: bufCount)
-		let cryptStatus = keyData.withUnsafeBytes { (keyBytes: UnsafeRawBufferPointer) -> CCCryptorStatus in
+		let cryptStatus = key.withUnsafeBytes { (keyBytes: UnsafeRawBufferPointer) -> CCCryptorStatus in
 			guard let keyBytes = keyBytes.baseAddress else {return CCCryptorStatus(kCCMemoryFailure)}
 			return input.withUnsafeBytes { (dataBytes: UnsafeRawBufferPointer) in
 				guard let dataBytes = dataBytes.baseAddress else {return CCCryptorStatus(kCCMemoryFailure)}

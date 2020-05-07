@@ -291,11 +291,11 @@ class SpotTests: XCTestCase {
 			return
 		}
 		print("randomData:", randomData.map {$0})
-		let key = "12341234123412341234123412341234"
+		let key = Data("12341234123412341234123412341234".utf8)
 		var cryptor = SymmetricCryptor(algorithm: .aes256)
 		cryptor.setRandomIV()
 		do {
-			let crypted = try cryptor.crypt(randomData, key: key)
+			let crypted = try cryptor.encrypt(randomData, key: key)
 			let decrypted = try cryptor.decrypt(crypted, key: key)
 			XCTAssert(decrypted == randomData)
 		} catch {
@@ -303,7 +303,7 @@ class SpotTests: XCTestCase {
 		}
 		do {
 			let source = "akl;sfjdas;f".data(using: .utf8)!
-			let crypted = try cryptor.crypt(source, key: key)
+			let crypted = try cryptor.encrypt(source, key: key)
 			let decrypted = try cryptor.decrypt(crypted, key: key)
 			XCTAssert(decrypted == source)
 		} catch {
