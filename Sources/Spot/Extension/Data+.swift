@@ -27,6 +27,21 @@ extension Data: SuffixProtocol {
 			}
 		}
 	}
+	
+	public static func spot(hex: String) -> Data? {
+		let len = hex.count / 2
+		var data = Data(capacity: len)
+		for i in 0..<len {
+            let start = hex.index(hex.startIndex, offsetBy: i * 2)
+            let end = hex.index(start, offsetBy: 2)
+            if var num = UInt8(hex[start..<end], radix: 16) {
+                data.append(&num, count: 1)
+            } else {
+                return nil
+            }
+        }
+		return data
+	}
 }
 
 extension Suffix where Base == Data {

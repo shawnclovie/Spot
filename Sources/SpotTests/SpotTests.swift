@@ -84,7 +84,10 @@ class SpotTests: XCTestCase {
 	}
 	
 	func testDataExtensions() {
-		XCTAssertEqual("ab".data(using: .utf8)!.spot.hexString, "6162")
+		let data = Data("ab".utf8)
+		let hex = data.spot.hexString
+		XCTAssertEqual(hex, "6162")
+		XCTAssertEqual(data, Data.spot(hex: hex))
 	}
 	
 	// MARK: -
