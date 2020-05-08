@@ -145,7 +145,9 @@ class SpotTests: XCTestCase {
 	}
 	
 	func testMIMEType() {
-		var expections: [XCTestExpectation] = [XCTestExpectation()]
+		var expections: [XCTestExpectation] = []
+		let exp = XCTestExpectation()
+		expections.append(exp)
 		logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.jpg"))
 		logger.logWithFileInfo(.debug, URLTask.mimeType(filename: "abc.ppt"))
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

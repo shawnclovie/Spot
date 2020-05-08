@@ -68,6 +68,7 @@ public final class URLTask: Hashable {
 	
 	public let mode: Mode
 	public private(set) var respondData = Data()
+	public private(set) var respondHeaders: [AnyHashable: Any] = [:]
 	/// Queue to call each progress, complete and downloaded events.
 	private var handlerQueue: DispatchQueue = .main
 	private weak var connection: URLConnection?
@@ -101,8 +102,11 @@ public final class URLTask: Hashable {
 		(sessionTask?.response as? HTTPURLResponse)?.statusCode
 	}
 	
-	public var respondHeaders: [AnyHashable: Any] {
-		(sessionTask?.response as? HTTPURLResponse)?.allHeaderFields ?? [:]
+	/// Get header of response for name, or lowercased name in it (some gateway may lowercased all header's name)
+	public func respondHeader(_ name: String) -> Any? {
+		guard let value = respondHeaders[name] ?? respondHeaders[name.lowercased()]
+			else {return nil}
+		return value
 	}
 	
 	public var respondLastModified: String? {
@@ -210,6 +214,9 @@ public final class URLTask: Hashable {
 	func didReceive(_ response: URLResponse) {
 		progress.totalBytesWritten = 0
 		progress.totalBytesExpected = response.expectedContentLength
+		if let resp = response as? HTTPURLResponse {
+			respondHeaders = resp.allHeaderFields
+		}
 	}
 	
 	func didProgress(_ progress: Progress) {
