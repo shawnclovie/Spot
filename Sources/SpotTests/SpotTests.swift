@@ -482,4 +482,27 @@ class SpotTests: XCTestCase {
 		XCTAssertEqual(1, AnyToInt64(1))
 		XCTAssertEqual(1, AnyToInt64(1.1))
 	}
+	
+	func testCodable() throws {
+		let jstr = "[" + String(repeating: """
+{"a":"b","c":\(UInt64.max),"d":[1,true,{}]},
+""", count: 100) + "0]"
+		let jdataSRC = Data(jstr.utf8)
+		let decoder = JSONDecoder()
+		let encoder = JSONEncoder()
+		let av = try decoder.decode(AnyCodable.self, from: jdataSRC)
+		print(av)
+		
+		var m = av.value as! [Any]
+		m += [AttributedError(.cancelled, object: jdataSRC, original: AttributedError(.unknown), userInfo: [NSDebugDescriptionErrorKey: "reason"]).description]
+		let jdata = try encoder.encode(AnyCodable(m))
+		print(String(decoding: jdata, as: UTF8.self))
+		
+		measure {
+			_ = try! decoder.decode(AnyCodable.self, from: jdataSRC)
+			_ = try! encoder.encode(AnyCodable(m))
+//			_ = try! JSONSerialization.jsonObject(with: jdataSRC)
+//			_ = try! JSONSerialization.data(withJSONObject: m)
+		}
+	}
 }
