@@ -110,7 +110,7 @@ public final class URLTask: Hashable {
 	}
 	
 	public var respondLastModified: String? {
-		respondHeaders["Last-Modified"] as? String
+		respondHeader("Last-Modified") as? String
 	}
 	
 	public var requestHeaders: [String: String]? {
