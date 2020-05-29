@@ -61,10 +61,14 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 	}
 	
 	func remove(_ task: URLTask) {
+		guard let it = task.sessionTask else {return}
+		removeTask(it.taskIdentifier)
+	}
+	
+	@discardableResult
+	private func removeTask(_ taskID: Int) -> (URLTask, URLSessionTask)? {
 		lockFor {
-			if let it = task.sessionTask {
-				tasks.removeValue(forKey: it.taskIdentifier)
-			}
+			let it = tasks.removeValue(forKey: taskID)
 			if self != .default && tasks.isEmpty {
 				session?.finishTasksAndInvalidate()
 				session = nil
@@ -72,6 +76,7 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 					Self.runningInstances.remove(self)
 				}
 			}
+			return it
 		}
 	}
 	
@@ -89,15 +94,18 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 	                     didWriteData bytesWritten: Int64,
 	                     totalBytesWritten: Int64,
 	                     totalBytesExpectedToWrite: Int64) {
-		guard let task = tasks[downloadTask.taskIdentifier]?.task else {return}
-		task.didProgress(.init(bytesWritten: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite))
+		guard let it = tasks[downloadTask.taskIdentifier] else {return}
+		it.task.didProgress(.init(
+			bytesWritten: bytesWritten,
+			totalBytesWritten: totalBytesWritten,
+			totalBytesExpected: totalBytesExpectedToWrite))
 	}
 	
 	open func urlSession(_ session: URLSession,
 	                     downloadTask: URLSessionDownloadTask,
 	                     didFinishDownloadingTo location: URL) {
-		guard let task = tasks[downloadTask.taskIdentifier]?.task else {return}
-		task.didDownload(to: location)
+		guard let it = tasks[downloadTask.taskIdentifier] else {return}
+		it.task.didDownload(to: location)
 	}
 	
 	// MARK: Upload Task
@@ -107,12 +115,11 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 	                     didSendBodyData bytesSent: Int64,
 	                     totalBytesSent: Int64,
 	                     totalBytesExpectedToSend: Int64) {
-		guard let task = tasks[task.taskIdentifier]?.task else {return}
-		let progress = URLTask.Progress(
+		guard let it = tasks[task.taskIdentifier] else {return}
+		it.task.didProgress(.init(
 			bytesWritten: bytesSent,
 			totalBytesWritten: totalBytesSent,
-			totalBytesExpected: totalBytesExpectedToSend)
-		task.didProgress(progress)
+			totalBytesExpected: totalBytesExpectedToSend))
 	}
 	
 	// MARK: Data Task Delegate
@@ -121,11 +128,11 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 						 dataTask: URLSessionDataTask,
 	                     didReceive response: URLResponse,
 	                     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-		guard let task = tasks[dataTask.taskIdentifier]?.task else {return}
+		guard let it = tasks[dataTask.taskIdentifier] else {return}
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: true)
 		#endif
-		task.didReceive(response)
+		it.task.didReceive(response)
 		completionHandler(.allow)
 	}
 	
@@ -140,22 +147,26 @@ open class URLConnection: NSObject, URLSessionDownloadDelegate, URLSessionDataDe
 	
 	open func urlSession(_ session: URLSession, task: URLSessionTask,
 						 didCompleteWithError error: Error?) {
-		guard let task = tasks[task.taskIdentifier]?.task else {return}
+		guard let it = tasks[task.taskIdentifier] else {return}
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: false)
 		#endif
-		remove(task)
-		task.didComplete(with: error.map{.init(.network, original: $0)})
+		removeTask(task.taskIdentifier)
+		it.task.didComplete(with: error.map{.init(.network, original: $0)})
 	}
 	
 	open func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
 		#if os(iOS)
 		UIApplication.shared.spot.set(networkActivityIndicatorVisible: false)
 		#endif
+		var tasks: [URLTask] = []
+		lockFor {
+			tasks = self.tasks.map{(_, it) in it.task}
+			self.tasks.removeAll()
+		}
 		let error = AttributedError(.network, original: error)
-		for it in tasks.values {
-			remove(it.task)
-			it.task.didComplete(with: error)
+		for it in tasks {
+			it.didComplete(with: error)
 		}
 	}
 }
