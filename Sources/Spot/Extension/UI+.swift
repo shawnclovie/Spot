@@ -6,6 +6,8 @@
 //  Copyright © 2017 Shawn Clovie. All rights reserved.
 //
 
+import CoreGraphics
+
 public enum ViewContentMode: Int {
 	case scaleToFill
 	
@@ -23,6 +25,28 @@ public enum ViewContentMode: Int {
 	case top, bottom, left, right
 	case topLeft, topRight
 	case bottomLeft, bottomRight
+	
+	public func scale(size: CGSize, toFit fitSize: CGSize) -> CGSize {
+		if size == .zero {
+			return size
+		}
+		let raito = CGSize(width: fitSize.width / size.width,
+						   height: fitSize.height / size.height)
+		var fixedRaito = raito
+		switch self {
+		case .scaleAspectFit:
+			let minRaito = min(raito.width, raito.height)
+			fixedRaito.width = minRaito
+			fixedRaito.height = minRaito
+		case .scaleAspectFill:
+			let maxRaito = max(raito.width, raito.height)
+			fixedRaito.width = maxRaito
+			fixedRaito.height = maxRaito
+		default:break
+		}
+		return CGSize(width: Int(size.width * fixedRaito.width),
+					  height: Int(size.height * fixedRaito.height))
+	}
 }
 
 public enum ImageOrientation: Int {

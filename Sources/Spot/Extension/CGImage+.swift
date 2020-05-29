@@ -19,6 +19,31 @@ import CoreServices
 public enum ImageEncoding {
 	case gif, png
 	case jpeg(quality: CGFloat)
+	
+	public func encode(_ image: CGImage, orientation: ImageOrientation? = nil, properties: [AnyHashable: Any] = [:]) -> Data? {
+		var properties = properties
+		let type: CFString
+		switch self {
+		case .png:
+			type = kUTTypePNG
+		case .jpeg(let quality):
+			type = kUTTypeJPEG
+			properties[kCGImageDestinationLossyCompressionQuality] = quality
+		case .gif:
+			type = kUTTypeGIF
+		}
+		guard let dataDST = CFDataCreateMutable(kCFAllocatorDefault, 0) else {return nil}
+		guard let dest = CGImageDestinationCreateWithData(dataDST, type, 1, nil) else {return nil}
+		properties[kCGImagePropertyPixelWidth] = image.width
+		properties[kCGImagePropertyPixelHeight] = image.height
+		properties[kCGImagePropertyHasAlpha] = image.alphaInfo != .none
+		if let value = orientation {
+			properties[kCGImagePropertyOrientation] = value.rawValue
+		}
+		CGImageDestinationAddImage(dest, image, properties as CFDictionary)
+		CGImageDestinationFinalize(dest)
+		return dataDST as Data
+	}
 }
 
 extension CGImage: SuffixProtocol {}
@@ -69,38 +94,13 @@ extension Suffix where Base: CGImage {
 	#if canImport(UIKit)
 	/// Encode image to data, supported format: png, jpg/jpeg, static gif.
 	public func encode(as encoding: ImageEncoding, orientation: UIImage.Orientation? = nil, properties: [AnyHashable: Any] = [:]) -> Data? {
-		_encode(as: encoding, orientation: (orientation?.rawValue).flatMap(ImageOrientation.init), properties: properties)
+		encoding.encode(base, orientation: (orientation?.rawValue).flatMap(ImageOrientation.init), properties: properties)
 	}
 	#else
 	public func encode(as encoding: ImageEncoding, orientation: ImageOrientation? = nil, properties: [AnyHashable: Any] = [:]) -> Data? {
-		_encode(as: encoding, orientation: orientation, properties: properties)
+		encoding.encode(base, orientation: orientation, properties: properties)
 	}
 	#endif
-	
-	private func _encode(as encoding: ImageEncoding, orientation: ImageOrientation? = nil, properties: [AnyHashable: Any] = [:]) -> Data? {
-		var properties = properties
-		let type: CFString
-		switch encoding {
-		case .png:
-			type = kUTTypePNG
-		case .jpeg(let quality):
-			type = kUTTypeJPEG
-			properties[kCGImageDestinationLossyCompressionQuality] = quality
-		case .gif:
-			type = kUTTypeGIF
-		}
-		guard let dataDST = CFDataCreateMutable(kCFAllocatorDefault, 0) else {return nil}
-		guard let dest = CGImageDestinationCreateWithData(dataDST, type, 1, nil) else {return nil}
-		properties[kCGImagePropertyPixelWidth] = base.width
-		properties[kCGImagePropertyPixelHeight] = base.height
-		properties[kCGImagePropertyHasAlpha] = base.alphaInfo != .none
-		if let value = orientation {
-			properties[kCGImagePropertyOrientation] = value.rawValue
-		}
-		CGImageDestinationAddImage(dest, base, properties as CFDictionary)
-		CGImageDestinationFinalize(dest)
-		return dataDST as Data
-	}
 	
 	#if canImport(UIKit)
 	/// Create new image by new orientation by flip or rotate.
