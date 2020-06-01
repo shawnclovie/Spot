@@ -9,6 +9,32 @@
 import Foundation
 import struct CoreGraphics.CGFloat
 
+public func AnyToString(_ v: Any?) -> String? {
+	switch v {
+	case let v as Int64:		return String(v)
+	case let v as Int:			return String(v)
+	case let v as Int8:			return String(v)
+	case let v as Int16:		return String(v)
+	case let v as Int32:		return String(v)
+	case let v as UInt:			return String(v)
+	case let v as UInt8:		return String(v)
+	case let v as UInt16:		return String(v)
+	case let v as UInt32:		return String(v)
+	case let v as UInt64:		return String(v)
+	case let v as Double:		return String(v)
+	case let v as Float:		return String(v)
+	case let v as CGFloat:		return String(v.native)
+	case let v as Bool:			return v ? "true" : "false"
+	case let v as String:		return v
+	case let v as Substring:	return String(v)
+	case let v as CustomStringConvertible:
+		return v.description
+	case let v as CustomDebugStringConvertible:
+		return v.debugDescription
+	default:return nil
+	}
+}
+
 public func AnyToInt64(_ v: Any?) -> Int64? {
 	switch v {
 	case let v as Int64:		return v
