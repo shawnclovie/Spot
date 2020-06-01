@@ -14,18 +14,22 @@ import AppKit
 #endif
 
 /// Version with some code numbers.
-public struct Version: CustomStringConvertible {
+public struct Version: LosslessStringConvertible {
 	
 	public typealias NumberType = UInt
 	
 	public var numbers: [NumberType] = []
+	
+	public init(_ description: String) {
+		self.init(description[...], separator: ".")
+	}
 	
 	/// Initialize version with string like 1.3.0
 	///
 	/// - Parameters:
 	///   - version: Version string
 	///   - separator: Separator, default is ".".
-	public init(_ version: String, separator: String = ".") {
+	public init(_ version: String, separator: String) {
 		self.init(version[...], separator: separator)
 	}
 	
