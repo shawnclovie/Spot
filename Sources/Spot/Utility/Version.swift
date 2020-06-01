@@ -16,7 +16,9 @@ import AppKit
 /// Version with some code numbers.
 public struct Version: CustomStringConvertible {
 	
-	public var numbers: [UInt] = []
+	public typealias NumberType = UInt
+	
+	public var numbers: [NumberType] = []
 	
 	/// Initialize version with string like 1.3.0
 	///
@@ -30,13 +32,13 @@ public struct Version: CustomStringConvertible {
 	public init(_ ver: String.SubSequence, separator: String = ".") {
 		let components = ver.components(separatedBy: separator)
 		for comp in components {
-			if let number = UInt(comp) {
+			if let number = NumberType(comp) {
 				numbers.append(number)
 			}
 		}
 	}
 	
-	public init(_ version: UInt...) {
+	public init(_ version: NumberType...) {
 		for number in version {
 			numbers.append(number)
 		}
@@ -47,7 +49,7 @@ public struct Version: CustomStringConvertible {
 	/// - parameter index: Code number index
 	///
 	/// - returns: Code number, or 0 while index not in range (0..<count of numbers).
-	public subscript(index: Int) -> UInt {
+	public subscript(index: Int) -> NumberType {
 		numbers.spot_value(at: index) ?? 0
 	}
 	
@@ -59,13 +61,13 @@ public struct Version: CustomStringConvertible {
 	/// - Parameters:
 	///   - count: Count of segment, should >= 1
 	///   - length: Length of each segment, should >= 1
-	public func segmentNumber(count: Int = 3, length: Int = 2) -> UInt {
+	public func segmentNumber(count: Int = 3, length: Int = 2) -> NumberType {
 		let count = max(count, 1)
 		let length = max(length, 1)
-		var num: UInt = 0
+		var num: NumberType = 0
 		for i in 0..<count {
 			let p = pow(10, Double(count - i - 1) * Double(length))
-			num += self[i] * UInt(p)
+			num += self[i] * NumberType(p)
 		}
 		return num
 	}
@@ -80,8 +82,8 @@ public struct Version: CustomStringConvertible {
 	public func compare(to ver2: Version) -> ComparisonResult {
 		let len1 = numbers.count
 		let len2 = ver2.numbers.count
-		var v1 = UInt(0)
-		var v2 = UInt(0)
+		var v1: NumberType = 0
+		var v2: NumberType = 0
 		for i in 0..<max(len1, len2) {
 			v1 = self[i]
 			v2 = ver2[i]
