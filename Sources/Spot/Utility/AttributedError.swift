@@ -56,12 +56,12 @@ public struct AttributedError: Error, ErrorConvertable, LocalizedDescriptable {
 	}
 	
 	public var localizedDescription: String {
-		let result = localizedKey.spot.localize(table: Self.localizableTable)
+		var desc = localizedKey.spot.localize(table: Self.localizableTable)
 		if let oriDesc = original?.spot_localizedDescription,
 			!oriDesc.isEmpty {
-			return "\(result) (\(oriDesc))"
+			desc += " (\(oriDesc))"
 		}
-		return result
+		return desc
 	}
 }
 
@@ -96,25 +96,26 @@ extension AttributedError.Source {
 	public static let unknown = AttributedError.Source("unknown")
 	public static let cancelled = AttributedError.Source("cancelled")
 	public static let timeout = AttributedError.Source("timeout")
-	public static let itemNotFound = AttributedError.Source("itemNotFound")
-	public static let invalidFormat = AttributedError.Source("invalidFormat")
-	public static let invalidStatus = AttributedError.Source("invalidStatus")
-	public static let invalidArgument = AttributedError.Source("invalidArgument")
-	public static let privilegeLimited = AttributedError.Source("privilegeLimited")
-	public static let duplicateOperation = AttributedError.Source("duplicateOperation")
-	public static let operationFailed = AttributedError.Source("operationFailed")
+	public static let itemNotFound = AttributedError.Source("item_not_found")
+	public static let invalidFormat = AttributedError.Source("invalid_format")
+	public static let invalidURLFormat = AttributedError.Source("invalid_url_format")
+	public static let invalidStatus = AttributedError.Source("invalid_status")
+	public static let invalidArgument = AttributedError.Source("invalid_argument")
+	public static let privilegeLimited = AttributedError.Source("privilege_limited")
+	public static let duplicateOperation = AttributedError.Source("duplicate_operation")
+	public static let operationFailed = AttributedError.Source("operation_failed")
 	
 	// MARK: IO
 	
-	public static let fileNotFound = AttributedError.Source("fileNotFound")
-	public static let fileNotReadable = AttributedError.Source("fileNotReadable")
-	public static let fileNotWritable = AttributedError.Source("fileNotWritable")
-	public static let fileDidExists = AttributedError.Source("fileDidExists")
+	public static let fileNotFound = AttributedError.Source("file_not_found")
+	public static let fileNotReadable = AttributedError.Source("file_not_readable")
+	public static let fileNotWritable = AttributedError.Source("file_not_writable")
+	public static let fileDidExists = AttributedError.Source("file_did_exists")
 	public static let io = AttributedError.Source("io")
 	
 	// MARK: Network
 	
 	public static let network = AttributedError.Source("network")
 	public static let server = AttributedError.Source("server")
-	public static let serviceMissing = AttributedError.Source("serviceMissing")
+	public static let serviceMissing = AttributedError.Source("service_missing")
 }
