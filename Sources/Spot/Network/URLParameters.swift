@@ -113,14 +113,25 @@ public struct URLParameters {
 		return values.remove(at: i)
 	}
 	
-	public var contentType: String? {
-		get {headers[URLTask.contentTypeKey]}
-		set {
-			if let v = newValue {
-				headers[URLTask.contentTypeKey] = v
-			} else {
-				headers.removeValue(forKey: URLTask.contentTypeKey)
-			}
+	public func header(_ name: String) -> String? {
+		headers[name] ?? headers[name.lowercased()]
+	}
+	
+	public mutating func set(header name: String, _ value: String?) {
+		if let v = value {
+			headers[name] = v
+		} else {
+			headers.removeValue(forKey: name)
 		}
+	}
+	
+	public var contentType: String? {
+		get {header(URLTask.contentTypeKey)}
+		set {set(header: URLTask.contentTypeKey, newValue)}
+	}
+	
+	public var contentEncoding: String? {
+		get {header(URLTask.contentEncodingKey)}
+		set {set(header: URLTask.contentEncodingKey, newValue)}
 	}
 }

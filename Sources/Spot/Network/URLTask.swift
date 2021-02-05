@@ -45,6 +45,7 @@ public final class URLTask: Hashable {
 		}
 	}
 	
+	public static let contentEncodingKey = "Content-Encoding"
 	public static let contentLengthKey = "Content-Length"
 	public static let contentTypeKey = "Content-Type"
 	public static let contentTypeJSON = "application/json"
